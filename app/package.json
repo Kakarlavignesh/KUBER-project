@@ -1,0 +1,12 @@
+{
+  "name": "k8s-rolling-update-demo",
+  "version": "1.0.0",
+  "description": "Demo application for Kubernetes Rolling Updates and Rollbacks",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

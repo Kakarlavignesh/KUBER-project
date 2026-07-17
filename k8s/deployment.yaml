@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rolling-update-demo
+  labels:
+    app: node-app
+spec:
+  replicas: 3
+  # Strategy for rolling update
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1 # At most 1 pod can be down during the update
+      maxSurge: 1       # At most 1 extra pod can be created over the desired 3
+  selector:
+    matchLabels:
+      app: node-app
+  template:
+    metadata:
+      labels:
+        app: node-app
+    spec:
+      containers:
+      - name: node-app-container
+        # Replace <your-dockerhub-username> with your actual Docker Hub username
+        image: <your-dockerhub-username>/node-app:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: APP_VERSION
+          value: "v1"
+        # Readiness and Liveness probes for production readiness
+        # These are crucial for Rolling Updates and Rollbacks to work properly
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 2
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
